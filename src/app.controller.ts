@@ -1,6 +1,7 @@
 import { Controller, Get, Render } from '@nestjs/common';
 import * as mysql from 'mysql2';
 import { AppService } from './app.service';
+import { PrismaService } from './prisma.service';
 
 const conn = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -12,11 +13,19 @@ const conn = mysql.createPool({
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly primaService: PrismaService
+    ) {}
 
   @Get()
   @Render('index')
   index() {
     return { message: 'Welcome to the homepage' };
+  }
+
+  @Get('baskets')
+  listBaskets(){
+    return this.primaService.baskets.findMany();
   }
 }
